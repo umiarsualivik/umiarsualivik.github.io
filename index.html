@@ -1,1 +1,180 @@
-中字人造语言收集站 初步预订
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>中字人造语言收集站</title>
+	<link rel="icon" href="icon.jpg" type="image/jpg" style="border-radius: 50%;" />
+	<style>
+		body {
+			user-select: none;
+			display: grid;
+			margin: 0px;
+			border: 0px;
+			width: 100vw;
+			height: 100vh;
+			background-color: #000000;
+			color: #ffffff;
+		}
+
+		.icon {
+			border-radius: 50%;
+		}
+
+		.hidden {
+			visibility: hidden !important;
+		}
+
+		.center {
+			display: grid;
+			text-align: center;
+			position: absolute;
+			place-items: center;
+		}
+
+		.masking::before {
+			left: 0px;
+			top: 0px;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			position: absolute;
+			content: "";
+		}
+
+		.SideBar {
+			text-align: center;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 4%;
+			height: 100%;
+			min-width: 50px;
+			background-color: #000033;
+		}
+
+		.Main {
+			overflow: clip;
+			display: grid;
+			text-align: center;
+			position: absolute;
+			place-items: center;
+			right: 0px;
+			width: calc(100% - max(4%, 50px));
+			height: 100%;
+		}
+
+		.SideBarButton {
+			overflow: clip;
+			border-radius: 20px;
+			border-color: #ffffff;
+			padding: 10%;
+			transition: background-color 0.3s ease-in-out;
+		}
+
+		.SideBarButton:hover {
+			background-color: rgba(255, 255, 255, 0.5);
+		}
+
+		.SideBarShowWindow {
+			padding: 15px;
+			left: 4%;
+			background-color: #000022;
+			border: 1px solid;
+			border-color: #ffffff;
+			border-radius: 12px;
+		}
+
+		.FloatWindow {
+			pointer-events: none;
+			padding: 15px;
+			left: 4%;
+			background-color: #000022;
+			border: 1px solid;
+			border-color: #ffff00;
+			border-radius: 12px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="SideBar">
+		<img name="sideBarIcon" class="SideBarButton" src="icon.jpg" style="left: 0; top: 0; width: 80%;">
+	</div>
+	<div class="Main">
+		<div class="masking" style="position: absolute; width: 100%; height: 100%; background-image: url('icon.jpg'); background-position: center; background-size: cover; filter: blur(60px);"></div>
+		<h1 class="center" style="font-size: 12vh;">中字人造语言收集站</h1>
+		<a>我也不知道什么时候完工！</a>
+	</div>
+	<div name="sideBarShowWindow" class="center hidden SideBarShowWindow"></div>
+	<div name="floatWindow" class="center hidden FloatWindow"></div>
+</body>
+
+<script>
+	const sideBar = document.getElementsByClassName("SideBar")[0];
+	const iconButton = document.getElementsByName("sideBarIcon")[0];
+	const sideBarShowWindow = document.getElementsByName("sideBarShowWindow")[0];
+	const mainDiv = document.getElementsByClassName("Main")[0];
+	const floatWindow = document.getElementsByName("floatWindow")[0];
+	// 以下clipboard相关函数
+	function writeClipboard(value) {
+		navigator.clipboard.writeText(value)
+			.then(() => { alert('内容已复制到剪切板: ' + value); })
+			.catch(err => { alert('无法复制文本: ' + err); });
+	}
+	// 以上clipboard相关函数
+	// 以下FloatWindow相关函数
+	let shouldClearFloatWindow = true;
+	function updateFloatWindow(event, value) {
+		floatWindow.replaceChildren();
+		if (value == null) {
+			floatWindow.classList.add("hidden");
+			return;
+		}
+		if (typeof (value) == typeof ([])) for (let i = 0; i < value.length; i++) floatWindow.innerHTML += `<a>${value[i]}</a>`;
+		else floatWindow.innerHTML = `<a>${value}</a>`;
+		let y = event.clientY - floatWindow.clientHeight;
+		y = y < 0 ? 0 : y;
+		floatWindow.style.left = event.clientX + 10 + "px";
+		floatWindow.style.top = y + "px";
+		shouldClearFloatWindow = false;
+		floatWindow.classList.remove("hidden");
+	}
+	document.addEventListener("mousemove", function (e) { shouldClearFloatWindow = true; }, true);
+	document.addEventListener("mousemove", function (e) { if (shouldClearFloatWindow) updateFloatWindow(null); }, false);
+	// 以上FloatWindow相关函数
+	// 以下SideBar相关函数
+	let sideBarShowing = 0;
+	function updateSideBarShowWindow(msg) {
+		if (sideBarShowing == msg) return null;
+		if (msg == null) {
+			sideBarShowWindow.replaceChildren();
+			sideBarShowWindow.classList.add("hidden");
+			sideBarShowing = 0;
+			return null;
+		}
+		sideBarShowWindow.replaceChildren();
+		sideBarShowWindow.top = "0";
+		sideBarShowWindow.left = sideBar.clientWidth + "px";
+		sideBarShowWindow.classList.remove("hidden");
+		sideBarShowing = msg;
+		return sideBarShowWindow;
+	}
+	iconButton.onmousemove = function (e) {
+		const show = updateSideBarShowWindow("iconDevelopers");
+		if (show == null) return;
+ 		show.innerHTML = `
+		<br />
+		<a>开发者群 | Developers</a>
+		<a><span>QQ: </span><span style="user-select: text" onclick="writeClipboard('123456789')" onmousemove="updateFloatWindow(event, '点击复制')">123456789</span></a>
+		<br />
+		`;
+	};
+	mainDiv.onmousemove = function (e) {
+		if (sideBarShowing == 0) return;
+		updateSideBarShowWindow(null);
+	};
+	// 以上SideBar相关函数
+</script>
+
+</html>
